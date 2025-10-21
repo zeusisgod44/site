@@ -1346,7 +1346,7 @@ h2 {
 .hamburger {
     position: absolute;
     right: 30px;
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: space-between;
     width: 28px;
