@@ -1,0 +1,924 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(42, 41, 39);
+}
+
+#page-fade {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a2927, #1f1e1d);
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 1s ease;
+
+    /* Hafif animasyonlu gradient */
+    background-size: 200% 200%;
+    animation: gradientMove 3s ease infinite;
+}
+
+/* Fade out sınıfı */
+#page-fade.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Gradient animasyonu */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+h1 {
+    font-family: 'Space Grotesk', monospace;
+}
+
+h2 {
+    font-family: 'Space Grotesk', monospace;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('Inter.woff2') format('woff2');
+    font-display: swap;
+}
+
+
+/* Navbar genel ayarları */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    background: transparent;
+    /* Başta tamamen transparan */
+    transition: background 0.5s ease, backdrop-filter 0.5s ease;
+    z-index: 1000;
+}
+
+/* Kaydırılınca aktif olacak stil */
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.1);
+    /* Hafif transparan beyaz */
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Canvas */
+#navbarCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* Logo */
+.logo img {
+    height: 60px;
+    width: auto;
+}
+
+/* Linkler */
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Hover efekti */
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: hsl(0, 100%, 50%);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: hsl(0, 100%, 70%);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ===================== DROPDOWN ===================== */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.dropdown-toggle .arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+/* Menü */
+.dropdown-menu {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.1);
+    /* navbar.scrolled stili */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    min-width: 280px;
+    padding: 10px 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+
+    /* Başta görünmez ama alanı korur */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+    z-index: 999;
+}
+
+/* Menü linkleri */
+.dropdown-menu a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: hsl(0, 100%, 70%);
+}
+
+/* Açılma animasyonu */
+.dropdown.active .dropdown-menu,
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+    /* hemen göster */
+}
+
+/* Kaybolma gecikmesi */
+.dropdown:not(:hover):not(.active) .dropdown-menu {
+    transition-delay: 0.25s;
+    /* mouse çekilince 250ms bekle */
+}
+
+/* Ok animasyonu */
+.dropdown.active .arrow,
+.dropdown:hover .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    text-decoration: none !important;
+}
+
+/* HERO SECTION */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(10, 10, 10, 0.9));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-family: 'Space Grotesk', monospace;
+}
+
+.hero h1 span {
+    color: hsl(0, 100%, 60%);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(0, 80%, 60%));
+    color: #fff;
+    font-weight: 600;
+    border-radius: 40px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 25px rgba(255, 0, 0, 0.3);
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 30px rgba(255, 0, 0, 0.5);
+}
+
+#heroCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+/* ABOUT SECTION */
+.about-section {
+    padding: 100px 20px;
+    background-color: #1f1e1d;
+    color: #fff;
+}
+
+.about-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.about-text {
+    flex: 1 1 500px;
+}
+
+.about-text h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-family: 'Space Grotesk', monospace;
+    color: hsl(0, 100%, 60%);
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.about-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(0, 80%, 60%));
+    color: #fff;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+}
+
+.about-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 0, 0, 0.5);
+}
+
+/* Resim alanı */
+.about-image {
+    flex: 1 1 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-image img {
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.about-image img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .about-section .container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .about-text,
+    .about-image {
+        flex: 1 1 100%;
+    }
+
+    .about-image {
+        margin-bottom: 40px;
+    }
+}
+
+.wave-divider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+    /* Eğer dalvanın yönünü ters yapmak istersen */
+}
+
+.wave-divider svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100px;
+}
+
+.wave-divider path {
+    fill: #1f1e1d;
+    /* About section background rengi ile aynı */
+}
+
+.about-section {
+    position: relative;
+    overflow: hidden;
+}
+
+#aboutCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Arka planda kalması için */
+}
+
+.about-section .container {
+    position: relative;
+    z-index: 1;
+    /* Canvasın üstünde görünmesi için */
+}
+
+/* geçiş yeri */
+.section-transition {
+    height: 80px;
+    background: linear-gradient(to bottom, #2a2927, #1f1e1d);
+}
+
+.section-transition.top-fade {
+    height: 80px;
+    background: linear-gradient(to top, #2a2927, #1f1e1d);
+}
+
+
+/* vizyon misyon */
+
+.vision-mission-section {
+    padding: 80px 20px;
+    background-color: #2a2927;
+    color: #fff;
+}
+
+.vision-mission-section .section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.vision-mission-section .section-title h2 {
+    font-size: 2.5rem;
+    color: #ff4d4d;
+    margin-bottom: 10px;
+}
+
+.vision-mission-section .section-title p {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+/* Sütun yapısı */
+.vm-columns {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vm-column {
+    flex: 1 1 400px;
+}
+
+/* Kart stili */
+
+.vm-card {
+    background: rgba(42, 41, 39, 0.85);
+    /* %85 opak, arka plan hafif görünüyor */
+    border-radius: 16px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+
+.vm-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 15px 30px rgba(255, 77, 77, 0.6);
+    background: rgba(42, 41, 39, 0.95);
+    /* Hover’da biraz daha opak */
+}
+
+
+.vm-card h3 {
+    color: #ff4d4d;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.vm-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.vm-card ul li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 15px;
+    color: #ddd;
+    font-size: 1rem;
+}
+
+/* Maddelerin önüne ikon/çizgi */
+.vm-card ul li::before {
+    content: "✔";
+    /* check işareti */
+    position: absolute;
+    left: 0;
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.vision-mission-section {
+    position: relative;
+    /* Canvas için gerekli */
+    padding: 80px 20px;
+    background-color: #2a2927;
+    color: #fff;
+    overflow: hidden;
+}
+
+#vmCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Kartların arkasında */
+}
+
+/* Kartların container z-index’i */
+.vision-mission-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* cta */
+.cta-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    color: #fff;
+    background-color: #fff;
+    /* Base renk */
+}
+
+#ctaCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Overlay ve içerik üstte */
+}
+
+.cta-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    z-index: 1;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.cta-content h2 {
+    font-size: 2.8rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-family: 'Space Grotesk', monospace;
+    color: #ff4d4d;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.cta-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(0, 80%, 60%));
+    color: #fff;
+    font-weight: 600;
+    border-radius: 40px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 25px rgba(255, 0, 0, 0.3);
+}
+
+.cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 30px rgba(255, 0, 0, 0.5);
+}
+
+/* footer */
+.footer {
+    background-color: #2a2927;
+    color: #fff;
+    padding: 50px 20px;
+    font-family: Arial, sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.footer-brand,
+.footer-services,
+.footer-pages,
+.footer-socials {
+    flex: 1 1 220px;
+}
+
+.footer-logo {
+    width: 150px;
+    margin-bottom: 15px;
+}
+
+.footer-brand p {
+    margin: 8px 0;
+}
+
+.footer-services h3,
+.footer-pages h3,
+.footer-socials h3 {
+    margin-bottom: 10px;
+    color: #ff4d4d;
+}
+
+.footer-services ul,
+.footer-pages ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-services li,
+.footer-pages li {
+    margin: 6px 0;
+}
+
+.footer-services a,
+.footer-pages a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.footer-services a:hover,
+.footer-pages a:hover {
+    color: #ff4d4d;
+    text-shadow: 0 0 6px #ff4d4d;
+}
+
+.footer-socials a {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.footer-socials a i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* Sosyal medya renkleri */
+.footer-socials a.instagram {
+    background-color: #E1306C;
+}
+
+.footer-socials a.facebook {
+    background-color: #1877F2;
+}
+
+.footer-socials a.x {
+    background-color: #000;
+}
+
+.footer-socials a.linkedin {
+    background-color: #0A66C2;
+}
+
+.footer-socials a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px #ff4d4d;
+}
+
+
+
+.footer-bottom {
+    border-top: 1px solid #444;
+    margin-top: 30px;
+    padding-top: 20px;
+    text-align: center;
+    /* Ortaladı */
+    display: flex;
+    flex-direction: column;
+    /* Alt alta getirir */
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    /* iki yazı arası boşluk */
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+.footer-bottom .made-by {
+    font-size: 0.9rem;
+    color: #ff4d4d;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* responsive */
+/* === HAMBURGER BUTONU === */
+.hamburger {
+    position: absolute;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+    transition: transform 0.3s ease;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 4px;
+    transition: all 0.4s ease;
+}
+
+/* Açıldığında X şekline dönüşsün */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* === MOBİL MENÜ (TAM EKRAN OVERLAY) === */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.97);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* sola hizalı */
+    justify-content: flex-start;
+    padding: 100px 40px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    /* Menü içi kaydırılabilir */
+}
+
+/* Menü aktif olduğunda görünür */
+.mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === LOGO === */
+.mobile-logo {
+    width: 120px;
+    margin: 0 auto 40px auto;
+    display: block;
+}
+
+/* === MENÜ ELEMANLARI === */
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.mobile-menu li {
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    /* ince ayırıcı çizgi */
+    padding: 0.9rem 0;
+}
+
+.mobile-menu li:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu a,
+.mobile-dropdown-toggle {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover efekti */
+.mobile-menu a:hover,
+.mobile-dropdown-toggle:hover {
+    color: hsl(0, 100%, 70%);
+    transform: translateX(4px);
+}
+
+/* Menü görünümü */
+.mobile-dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-left: 15px;
+    padding-left: 10px;
+    transition:
+        max-height 0.6s ease,
+        opacity 0.6s ease,
+        margin-top 0.6s ease;
+}
+
+/* Açıldığında yumuşak animasyonla gelsin */
+.mobile-dropdown.open .mobile-dropdown-menu {
+    opacity: 1;
+    max-height: 500px;
+    /* yeterli alan */
+    margin-top: 10px;
+}
+
+
+
+/* === RESPONSIVE === */
+@media (max-width: 950px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .navbar .logo img {
+        height: 48px;
+        /* logo küçülür */
+    }
+}

@@ -1,0 +1,1499 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(42, 41, 39);
+
+}
+
+#page-fade {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a2927, #1f1e1d);
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 1s ease;
+
+    /* Hafif animasyonlu gradient */
+    background-size: 200% 200%;
+    animation: gradientMove 3s ease infinite;
+}
+
+/* Fade out sınıfı */
+#page-fade.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+h2 {
+    font-family: 'Space Grotesk', monospace;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('Inter.woff2') format('woff2');
+    font-display: swap;
+}
+
+/* Navbar genel ayarları */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    background: transparent;
+    /* Başta tamamen transparan */
+    transition: background 0.5s ease, backdrop-filter 0.5s ease;
+    z-index: 1000;
+}
+
+/* Kaydırılınca aktif olacak stil */
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.1);
+    /* Hafif transparan beyaz */
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Canvas */
+#navbarCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* Logo */
+.logo img {
+    height: 60px;
+    width: auto;
+}
+
+/* Linkler */
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Hover efekti */
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: hsl(0, 100%, 50%);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: hsl(0, 100%, 70%);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ===================== DROPDOWN ===================== */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.dropdown-toggle .arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+/* Menü */
+.dropdown-menu {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.1);
+    /* navbar.scrolled stili */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    min-width: 280px;
+    padding: 10px 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+
+    /* Başta görünmez ama alanı korur */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+    z-index: 999;
+}
+
+/* Menü linkleri */
+.dropdown-menu a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: hsl(0, 100%, 70%);
+}
+
+/* Açılma animasyonu */
+.dropdown.active .dropdown-menu,
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+    /* hemen göster */
+}
+
+/* Kaybolma gecikmesi */
+.dropdown:not(:hover):not(.active) .dropdown-menu {
+    transition-delay: 0.25s;
+    /* mouse çekilince 250ms bekle */
+}
+
+/* Ok animasyonu */
+.dropdown.active .arrow,
+.dropdown:hover .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    text-decoration: none !important;
+}
+
+
+
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.2) translateY(30px);
+    /* Başlangıçta daha büyük ve aşağıda */
+    transition: opacity 1.2s ease-in-out, transform 1.2s ease-in-out;
+    /* hız ve geçişi arttır */
+    filter: brightness(70%);
+}
+
+.slide.active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    /* Fade in + yukarıya gelme */
+}
+
+
+/* HERO YAZILARI */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+}
+
+/* Her slaytta yazı yeniden animasyon yapacak */
+.hero-content.animate {
+    animation: fadeUp 1.2s ease forwards;
+}
+
+.hero-content h1 {
+    font-size: 2.7rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.animate-title {
+    animation: fadeInUp 1s ease;
+}
+
+.animate-desc {
+    animation: fadeInUp 1.2s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Yazı animasyonu */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -30%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* GÖSTERGE */
+.indicators {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 3;
+}
+
+.indicator {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.indicator.active {
+    background: #fff;
+    width: 50px;
+}
+
+/* HERO CONTENT (varsa mevcut stilinle çakışmasın diye tekrar koydum) */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+    /* header zaten z-index:1000 ise header üstte kalır; hero içerik ortada görünür */
+}
+
+/* HERO BUTON */
+.hero-btn {
+    position: relative;
+    display: inline-block;
+    margin-top: 42px;
+    padding: 12px 40px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(255, 77, 77, 0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+}
+
+.hero-btn.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-btn.fade-out {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(255, 77, 77, 0.45);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    /* GPU hızlandırma */
+}
+
+.hero-btn {
+    backface-visibility: hidden;
+    will-change: opacity, transform;
+}
+
+/* ================= HAKKIMIZDA ================= */
+.about-section {
+    padding: 120px 50px;
+    background-color: rgb(42, 41, 39);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.about-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.about-text {
+    flex: 1 1 500px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s forwards;
+}
+
+.about-text h2 {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    color: #ff4d4d;
+    position: relative;
+}
+
+.about-text h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ff4d4d;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.about-text p {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    margin-bottom: 25px;
+    color: #e0e0e0;
+}
+
+.about-btn {
+    display: inline-block;
+    padding: 14px 45px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    transition: all 0.4s ease;
+}
+
+.about-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 40px rgba(255, 77, 77, 0.5);
+}
+
+/* Görsel kısmı */
+.about-image {
+    flex: 1 1 400px;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s forwards 0.3s;
+}
+
+.about-image img {
+    position: relative;
+}
+
+.about-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    background: linear-gradient(to left, rgba(31, 30, 29, 0.6), transparent);
+    pointer-events: none;
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.image-wrapper img {
+    max-width: 100%;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.image-wrapper:hover img {
+    transform: scale(1.05) rotate(1deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 77, 77, 0.85);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.image-wrapper:hover .image-overlay {
+    opacity: 1;
+}
+
+/* Animasyon */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ortak fadeIn animasyonu */
+.fade-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s ease;
+}
+
+.fade-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease;
+}
+
+.fade-in-left {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in-right {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.about-btn {
+    display: inline-block;
+    padding: 14px 45px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    transition: all 0.4s ease, opacity 0.8s ease, transform 0.8s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.about-btn.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#hakkimizda {
+    position: relative;
+    overflow: hidden;
+}
+
+#about-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Canvas tıklanabilirliği engeller */
+    z-index: 0;
+    /* İçerik canvasın üstünde */
+}
+
+.about-container {
+    position: relative;
+    z-index: 1;
+    /* Canvasın üstünde görünmesi için */
+}
+
+/* Hizmetler Section */
+.service-section {
+    position: relative;
+    /* Canvas için */
+    padding: 100px 50px;
+    background: #1f1e1d;
+    color: #fff;
+}
+
+
+
+.service-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 50px;
+}
+
+.service-text {
+    flex: 1 1 500px;
+}
+
+.service-text h2 {
+    font-size: 2.8rem;
+    margin-bottom: 25px;
+    color: #ff4d4d;
+    position: relative;
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s ease;
+}
+
+.service-text h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ff4d4d;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.service-text p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    color: #fff;
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease;
+}
+
+.service-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.service-list li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 10px;
+}
+
+.service-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.service-section ul li {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.6s ease;
+}
+
+.service-animate-li {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service-btn {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 12px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+}
+
+.service-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 77, 77, 0.4);
+}
+
+.service-image {
+    flex: 1 1 400px;
+    text-align: center;
+}
+
+.service-image img {
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.8s ease;
+}
+
+.service-image img {
+    position: relative;
+}
+
+.service-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    background: linear-gradient(to left, rgba(31, 30, 29, 0.6), transparent);
+    pointer-events: none;
+}
+
+.service-image:hover img {
+    transform: scale(1.05) rotate(1deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* Animasyon sınıfları */
+.service-animate-title {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service-animate-p {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service-animate-btn {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.service-animate-img {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+.section-transition {
+    height: 80px;
+    background: linear-gradient(to bottom, #2a2927, #1f1e1d);
+}
+
+.section-transition.top-fade {
+    height: 80px;
+    background: linear-gradient(to top, #2a2927, #1f1e1d);
+}
+
+
+/* ================= SERVİS 2 ================= */
+
+.service2-section {
+    position: relative;
+    padding: 100px 50px;
+    background: #2a2927;
+    color: #fff;
+}
+
+.service2-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 50px;
+}
+
+/* Resim solda */
+.service2-image {
+    flex: 1 1 400px;
+    text-align: center;
+}
+
+.service2-image img {
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.8s ease;
+}
+
+.service2-image {
+    position: relative;
+    display: inline-block;
+    /* div boyutu sadece img kadar */
+}
+
+.service2-image img {
+    display: block;
+    /* alt boşlukları kaldırır */
+    max-width: 100%;
+    border-radius: 20px;
+}
+
+
+
+
+.service2-image:hover img {
+    transform: scale(1.05) rotate(-1deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.service2-text {
+    flex: 1 1 500px;
+    text-align: left;
+    position: relative;
+}
+
+.service2-text h2 {
+    font-size: 2.8rem;
+    margin-bottom: 25px;
+    color: #ff4d4d;
+    position: relative;
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease;
+    display: inline-block;
+}
+
+.service2-text h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 60px;
+    height: 4px;
+    background: #ff4d4d;
+    border-radius: 2px;
+}
+
+.service2-text p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    color: #fff;
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s ease;
+    text-align: left;
+}
+
+/* ✅ Liste animasyonu */
+.service2-text ul {
+    list-style: none;
+
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.service2-text ul li {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.6s ease;
+    margin-bottom: 8px;
+}
+
+.service2-text li::before {
+    margin-right: 1rem;
+    content: '✓';
+    position: relative;
+    left: 0;
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.service2-animate-li {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service2-btn-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.service2-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+}
+
+.service2-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 77, 77, 0.4);
+}
+
+/* Animasyon sınıfları */
+.service2-animate-title {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service2-animate-p {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.service2-animate-btn {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.service2-animate-img {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+
+/* ================= DEPREM VE KENTSEL DÖNÜŞÜM ================= */
+.quake-section {
+    position: relative;
+    padding: 130px 50px;
+    background: #2a2927;
+    color: #fff;
+    overflow: hidden;
+}
+
+#quake-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.quake-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 70px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==== Text ==== */
+.quake-text {
+    flex: 1 1 520px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: quakeFadeUp 1.2s forwards;
+}
+
+.quake-text h2 {
+    font-size: 3.2rem;
+    color: #ff4d4d;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.quake-text h2::after {
+    content: '';
+    display: block;
+    width: 70px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff4d4d, #ff7a7a);
+    border-radius: 2px;
+    margin-top: 10px;
+}
+
+.quake-text p {
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: #e3e3e3;
+    margin-bottom: 25px;
+}
+
+/* ==== Button ==== */
+.quake-btn {
+    display: inline-block;
+    padding: 15px 50px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff4d4d, #ff7676);
+    color: #fff;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: quakeFadeUp 1.2s forwards 0.4s;
+}
+
+.quake-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 77, 77, 0.5);
+}
+
+/* ==== Görsel ==== */
+.quake-image {
+    flex: 1 1 420px;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: quakeFadeUp 1.2s forwards 0.3s;
+}
+
+.image-wrapper img {
+    max-width: 100%;
+    border-radius: 25px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+    transition: transform 0.6s ease, box-shadow 0.6s ease;
+}
+
+.image-wrapper:hover img {
+    transform: scale(1.06);
+    box-shadow: 0 25px 60px rgba(255, 77, 77, 0.4);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 77, 77, 0.9);
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.image-wrapper:hover .image-overlay {
+    opacity: 1;
+}
+
+/* ==== Animasyonlar ==== */
+@keyframes quakeFadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===================== ÖZEL FADE EFEKTLERİ ===================== */
+.quake-fade-left {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.95);
+    filter: blur(4px);
+    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.quake-fade-right {
+    opacity: 0;
+    transform: translateX(60px) scale(0.95);
+    filter: blur(4px);
+    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.quake-fade-in-left {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+}
+
+.quake-fade-in-right {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+}
+
+
+/* stat */
+.stats-section {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background-color: #1f1e1d;
+    color: white;
+    padding: 100px 5% 100px;
+    /* üst-alt eşit padding */
+    min-height: 700px;
+    /* ekranı kaplamaya yaklaşır ama abartmaz */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ff4d4d;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+
+
+.stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 3rem;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2.2rem 1.8rem;
+    min-width: 180px;
+    flex: 1 1 200px;
+    backdrop-filter: blur(4px);
+    transition: all 0.5s ease;
+    opacity: 0;
+    transform: translateY(60px);
+    cursor: default;
+}
+
+.stat-box.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.stat-box:hover {
+    transform: translateY(-5px) scale(1.03);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 15px rgba(255, 211, 105, 0.15);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ff4d4d;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.stat-number+span {
+    font-size: 2.2rem;
+    color: #ff4d4d;
+    margin-left: 6px;
+    font-weight: 700;
+    display: inline-block;
+    transform: translateY(-2px);
+    /* çok hafif yukarı al */
+}
+
+.stat-label {
+    margin-top: 0.8rem;
+    font-size: 1.1rem;
+    color: #eee;
+    letter-spacing: 0.5px;
+}
+
+#statsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.stats-section {
+    font-family: 'Space Grotesk', monospace;
+}
+
+/* Başlık başlangıçta görünmez ve biraz aşağıda */
+.stats-section .animated-text {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Fade-in + slide-up animasyonu */
+.stats-section .animated-text.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.footer {
+    background-color: #2a2927;
+    color: #fff;
+    padding: 50px 20px;
+    font-family: Arial, sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.footer-brand,
+.footer-services,
+.footer-pages,
+.footer-socials {
+    flex: 1 1 220px;
+}
+
+.footer-logo {
+    width: 150px;
+    margin-bottom: 15px;
+}
+
+.footer-brand p {
+    margin: 8px 0;
+}
+
+.footer-services h3,
+.footer-pages h3,
+.footer-socials h3 {
+    margin-bottom: 10px;
+    color: #ff4d4d;
+}
+
+.footer-services ul,
+.footer-pages ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-services li,
+.footer-pages li {
+    margin: 6px 0;
+}
+
+.footer-services a,
+.footer-pages a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.footer-services a:hover,
+.footer-pages a:hover {
+    color: #ff4d4d;
+    text-shadow: 0 0 6px #ff4d4d;
+}
+
+.footer-socials a {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.footer-socials a i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* Sosyal medya renkleri */
+.footer-socials a.instagram {
+    background-color: #E1306C;
+}
+
+.footer-socials a.facebook {
+    background-color: #1877F2;
+}
+
+.footer-socials a.x {
+    background-color: #000;
+}
+
+.footer-socials a.linkedin {
+    background-color: #0A66C2;
+}
+
+.footer-socials a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px #ff4d4d;
+}
+
+
+.footer-bottom {
+    border-top: 1px solid #444;
+    margin-top: 30px;
+    padding-top: 20px;
+    text-align: center;
+    /* Ortaladı */
+    display: flex;
+    flex-direction: column;
+    /* Alt alta getirir */
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    /* iki yazı arası boşluk */
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+.footer-bottom .made-by {
+    font-size: 0.9rem;
+    color: #ff4d4d;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* responsive */
+/* === HAMBURGER BUTONU === */
+.hamburger {
+    position: absolute;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+    transition: transform 0.3s ease;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 4px;
+    transition: all 0.4s ease;
+}
+
+/* Açıldığında X şekline dönüşsün */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* === MOBİL MENÜ (TAM EKRAN OVERLAY) === */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.97);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* sola hizalı */
+    justify-content: flex-start;
+    padding: 100px 40px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    /* Menü içi kaydırılabilir */
+}
+
+/* Menü aktif olduğunda görünür */
+.mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === LOGO === */
+.mobile-logo {
+    width: 120px;
+    margin: 0 auto 40px auto;
+    display: block;
+}
+
+/* === MENÜ ELEMANLARI === */
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.mobile-menu li {
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    /* ince ayırıcı çizgi */
+    padding: 0.9rem 0;
+}
+
+.mobile-menu li:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu a,
+.mobile-dropdown-toggle {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover efekti */
+.mobile-menu a:hover,
+.mobile-dropdown-toggle:hover {
+    color: hsl(0, 100%, 70%);
+    transform: translateX(4px);
+}
+
+/* Menü görünümü */
+.mobile-dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-left: 15px;
+    padding-left: 10px;
+    transition:
+        max-height 0.6s ease,
+        opacity 0.6s ease,
+        margin-top 0.6s ease;
+}
+
+/* Açıldığında yumuşak animasyonla gelsin */
+.mobile-dropdown.open .mobile-dropdown-menu {
+    opacity: 1;
+    max-height: 500px;
+    /* yeterli alan */
+    margin-top: 10px;
+}
+
+
+
+/* === RESPONSIVE === */
+@media (max-width: 950px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .navbar .logo img {
+        height: 48px;
+        /* logo küçülür */
+    }
+}
